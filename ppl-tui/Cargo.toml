@@ -1,0 +1,7 @@
+[package]
+name = "ppl-tui"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+ppl-game = { path = "../ppl-game", features = [ "tui" ] }

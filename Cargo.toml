@@ -1,0 +1,8 @@
+[workspace]
+members = [ "ppl-game", "ppl-tui" ]
+
+[profile.release]
+lto = true
+opt-level = 's'
+strip = true
+panic = 'abort'
