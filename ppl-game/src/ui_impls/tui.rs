@@ -114,6 +114,7 @@ impl std::ops::Drop for TermiosInnerGuard {
 }
 
 /// Main struct of user interface. Implements [`crate::ui::Context`] trait
+#[derive(Default)]
 pub struct Context(());
 
 const STATUS_OFFSET: Point = Point(0, 0);
@@ -179,7 +180,6 @@ impl Context {
         }
         Ok(())
     }
-
 }
 
 /// Fragment of interface. Implements [`crate::ui::Fragment`] etc...

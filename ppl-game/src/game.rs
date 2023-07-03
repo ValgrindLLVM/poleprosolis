@@ -1,11 +1,11 @@
 //! # Main game state
 
-use std::fmt::{Write, self};
+use std::fmt::{self, Write};
 
 use crate::{
-    assets::maps::{BlockData, CollisionTy, GameMaps, BlockState},
+    assets::maps::{BlockData, BlockState, CollisionTy, GameMaps},
     player::Player,
-    ui::{BlockFragment, BlockTy, Context, Fragment, Point, TextFragment, Color},
+    ui::{BlockFragment, BlockTy, Color, Context, Fragment, Point, TextFragment},
 };
 
 /// Maximum point of map
@@ -73,13 +73,13 @@ impl<UI: Context> GameHandle<UI> {
                     writeln!(l)?;
                 }
                 l.set_color(Color::Normal)?;
-            },
-            _ => {},
+            }
+            _ => {}
         }
 
         Ok(())
     }
-    
+
     /// Toggle inventory in lore
     pub fn toggle_inventory(&mut self) {
         match self.lore {
@@ -138,10 +138,11 @@ impl<UI: Context> Game<UI> {
                     _ => break 'brk,
                 };
                 if let Some(BlockData {
-                    state: BlockState {
-                        collision: CollisionTy::Collision,
-                        ..
-                    },
+                    state:
+                        BlockState {
+                            collision: CollisionTy::Collision,
+                            ..
+                        },
                     ..
                 }) = self.maps.find_at(pos)
                 {
@@ -151,7 +152,11 @@ impl<UI: Context> Game<UI> {
                 self.maps.do_random_tick(&mut self.handle)?;
                 let mut m = self.handle.ui.main();
                 m.set_pos(old_pos)?;
-                m.put_block(self.maps.find_at(old_pos).map_or(BlockTy::Air, |f| f.state.ty))?;
+                m.put_block(
+                    self.maps
+                        .find_at(old_pos)
+                        .map_or(BlockTy::Air, |f| f.state.ty),
+                )?;
                 m.set_pos(pos)?;
                 m.put_block(BlockTy::Player)?;
             }

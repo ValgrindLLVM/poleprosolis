@@ -85,7 +85,7 @@ impl<UI: ui::Context> GameMaps<UI> {
     }
 
     /// Interact with block by it's position
-    pub fn interact_at<'a>(&mut self, pos: Point, game_handle: &mut GameHandle<UI>) {
+    pub fn interact_at(&mut self, pos: Point, game_handle: &mut GameHandle<UI>) {
         let data = self
             .get_current_mut()
             .iter_mut()

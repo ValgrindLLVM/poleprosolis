@@ -1,4 +1,7 @@
-use crate::{ui::{Point, self}, assets::blocks::wheat::Wheat};
+use crate::{
+    assets::blocks::wheat::Wheat,
+    ui::{self, Point},
+};
 
 use super::{BlockData, CollisionTy};
 

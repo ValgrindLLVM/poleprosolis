@@ -1,5 +1,9 @@
-use std::io::{Read, stdin};
-use ppl_game::{ui_impls::tui, game::{Game, GameAction}, ui::Context};
+use ppl_game::{
+    game::{Game, GameAction},
+    ui::Context,
+    ui_impls::tui,
+};
+use std::io::{stdin, Read};
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
     let mut game = tui::Context::init()?.map(Game::new);

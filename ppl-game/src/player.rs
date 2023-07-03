@@ -23,6 +23,11 @@ impl Player {
         }
     }
 }
+impl Default for Player {
+    fn default() -> Self {
+        Self::new()
+    }
+}
 
 /// Represents player's inventory
 #[derive(Clone, Debug, PartialEq, Default)]

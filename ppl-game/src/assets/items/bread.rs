@@ -12,5 +12,5 @@ pub enum Bread {
         tier: Tier,
         /// Bread mass. Max: 255, min: 0.
         mass: u8,
-    }
+    },
 }

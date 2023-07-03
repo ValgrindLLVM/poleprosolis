@@ -59,7 +59,7 @@ pub enum BlockTy {
 
     Wheat,
     GrowingWheat,
-    
+
     Water,
 }
 
@@ -156,7 +156,7 @@ pub trait ContextExt: Context {
     /// ```
     fn transaction<F>(&mut self, f: F) -> Result<(), <Self as Context>::Error>
     where
-        F: FnOnce(&mut Self) -> Result<(), <Self as Context>::Error> 
+        F: FnOnce(&mut Self) -> Result<(), <Self as Context>::Error>,
     {
         f(self)?;
         self.apply()
@@ -166,10 +166,12 @@ impl<T: Context> ContextExt for T {}
 
 pub trait BlockFragmentExt: BlockFragment {
     /// Put block by it's state like [`BlockFragment::put_block`]
-    fn put_block_state(&mut self, block_state: &BlockState) -> Result<(), <Self as Fragment>::Error> {
+    fn put_block_state(
+        &mut self,
+        block_state: &BlockState,
+    ) -> Result<(), <Self as Fragment>::Error> {
         self.set_pos(block_state.pos)?;
         self.put_block(block_state.ty)
     }
 }
 impl<T: BlockFragment> BlockFragmentExt for T {}
-
