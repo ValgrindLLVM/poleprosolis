@@ -1,9 +1,8 @@
 use crate::{
-    assets::maps::{CollisionTy, PartialBlockState, UpdateContext},
+    assets::blocks::{BlockBehavior, BlockUpdates},
+    map::{CollisionTy, PartialBlockState, UpdateContext},
     ui::{self, BlockTy},
 };
-
-use super::{Block, BlockUpdates};
 
 pub struct Wheat {
     tick: u8,
@@ -15,8 +14,8 @@ impl Wheat {
     }
 }
 
-impl<UI: ui::Context> Block<UI> for Wheat {
-    fn update(&mut self, _ctx: &mut UpdateContext<'_, UI>) -> BlockUpdates {
+impl BlockBehavior for Wheat {
+    fn update<UI: ui::Context>(&mut self, _ctx: &mut UpdateContext<'_, UI>) -> BlockUpdates {
         if self.tick == 0 {
             return Default::default();
         }
@@ -36,7 +35,7 @@ impl<UI: ui::Context> Block<UI> for Wheat {
         }
     }
 
-    fn interact(&mut self, ctx: &mut UpdateContext<'_, UI>) -> BlockUpdates {
+    fn interact<UI: ui::Context>(&mut self, ctx: &mut UpdateContext<'_, UI>) -> BlockUpdates {
         if self.tick != 0 {
             return Default::default();
         }

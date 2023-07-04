@@ -3,7 +3,7 @@
 use std::fmt::{self, Write};
 
 use crate::{
-    assets::maps::{BlockData, BlockState, CollisionTy, GameMaps},
+    map::{BlockData, BlockState, CollisionTy, GameMaps},
     player::Player,
     ui::{BlockFragment, BlockTy, Color, Context, Fragment, Point, TextFragment},
 };
@@ -15,7 +15,7 @@ pub const MAX_POINT: Point = Point(29, 11);
 pub struct Game<UI: Context> {
     pub handle: GameHandle<UI>,
     pub player_pos: Point,
-    pub maps: GameMaps<UI>,
+    pub maps: GameMaps,
 }
 
 /// Main game handle with user interface and player information.
