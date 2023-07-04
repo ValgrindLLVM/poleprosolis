@@ -1,6 +1,6 @@
 //! Terminal User Interface
 
-use std::{fmt, io::Write, marker::PhantomData, mem::ManuallyDrop};
+use std::{io::Write, marker::PhantomData, mem::ManuallyDrop};
 
 use crate::ui::{self, Point};
 use termios::Termios;
@@ -290,37 +290,12 @@ impl<
         const X_MAX: u16,
         const LINES: u16,
         const LIMITED: bool,
-    > fmt::Write for Fragment<'context, TextTy, X, Y, X_MAX, LINES, LIMITED>
-{
-    fn write_str(&mut self, s: &str) -> fmt::Result {
-        let mut s = s.split('\n').peekable();
-        let mut f = std::io::stdout();
-
-        while let Some(fr) = s.next() {
-            f.write_all(fr.as_bytes()).map_err(|_| fmt::Error)?;
-            if s.peek().is_some() {
-                use ui::Fragment;
-                self.0.line += 1;
-                self.set_line(self.0.line).map_err(|_| fmt::Error)?;
-            }
-        }
-
-        Ok(())
-    }
-}
-impl<
-        'context,
-        const X: u16,
-        const Y: u16,
-        const X_MAX: u16,
-        const LINES: u16,
-        const LIMITED: bool,
     > ui::TextFragment for Fragment<'context, TextTy, X, Y, X_MAX, LINES, LIMITED>
 {
-    fn set_color(&mut self, color: ui::Color) -> Result<(), fmt::Error> {
+    fn set_color(&mut self, color: ui::Color) -> Result<(), Self::Error> {
         use ui::Color::*;
         let mut s = std::io::stdout();
-        let r = match color {
+        match color {
             Normal => s.write_all(b"\x1b[0m"),
             Red => s.write_all(b"\x1b[0;31m"),
             BoldRed => s.write_all(b"\x1b[1;31m"),
@@ -329,7 +304,22 @@ impl<
             Magenta => s.write_all(b"\x1b[0;35m"),
             Cyan => s.write_all(b"\x1b[0;36m"),
             Gold => s.write_all(b"\x1b[0;93m"),
-        };
-        r.map_err(|_| fmt::Error)
+        }
+    }
+
+    fn put_str(&mut self, s: &str) -> Result<(), Self::Error> {
+        let mut s = s.split('\n').peekable();
+        let mut f = std::io::stdout();
+
+        while let Some(fr) = s.next() {
+            f.write_all(fr.as_bytes())?;
+            if s.peek().is_some() {
+                use ui::Fragment;
+                self.0.line += 1;
+                self.set_line(self.0.line)?;
+            }
+        }
+
+        Ok(())
     }
 }

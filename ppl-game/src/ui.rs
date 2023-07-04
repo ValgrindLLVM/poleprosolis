@@ -132,10 +132,12 @@ pub trait BlockFragment: Fragment {
 /// # Notes
 /// [`fmt::Write`] implementation for this trait must have correct
 /// newlines (`\n`) handling.
-// FIXME: use Fragment<Error = fmt::Error> here
-pub trait TextFragment: Fragment + fmt::Write {
+pub trait TextFragment: Fragment {
     /// Set text color.
-    fn set_color(&mut self, color: Color) -> Result<(), fmt::Error>;
+    fn set_color(&mut self, color: Color) -> Result<(), Self::Error>;
+
+    /// Write a string. After action cursor position can be any
+    fn put_str(&mut self, s: &str) -> Result<(), Self::Error>;
 }
 
 /// Extension for Context
@@ -175,3 +177,29 @@ pub trait BlockFragmentExt: BlockFragment {
     }
 }
 impl<T: BlockFragment> BlockFragmentExt for T {}
+
+/// Provides `write_fmt` method required by [`write!`]
+pub trait TextFragmentFmt: TextFragment {
+    /// Works like [`std::fmt::Write::write_fmt`] but saves error
+    fn write_fmt(&mut self, args: fmt::Arguments<'_>) -> Result<(), Self::Error> {
+        use fmt::Write;
+
+        pub struct Adapter<'a, T: TextFragment + ?Sized>(&'a mut T, Option<T::Error>)
+        where
+            T::Error: Sized;
+        impl<'a, T: TextFragment + ?Sized> fmt::Write for Adapter<'a, T> {
+            fn write_str(&mut self, s: &str) -> fmt::Result {
+                self.0.put_str(s).map_err(|e| {
+                    self.1 = Some(e);
+                    fmt::Error
+                })
+            }
+        }
+
+        let mut adapter = Adapter(self, None);
+        adapter
+            .write_fmt(args)
+            .map_err(|_| adapter.1.expect("fmt error"))
+    }
+}
+impl<T: TextFragment + ?Sized> TextFragmentFmt for T where T::Error: Sized {}

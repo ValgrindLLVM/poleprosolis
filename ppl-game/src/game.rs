@@ -1,11 +1,9 @@
 //! # Main game state
 
-use std::fmt::{self, Write};
-
 use crate::{
     map::{BlockData, BlockState, CollisionTy, GameMaps},
     player::Player,
-    ui::{BlockFragment, BlockTy, Color, Context, Fragment, Point, TextFragment},
+    ui::{BlockFragment, BlockTy, Color, Context, Fragment, Point, TextFragment, TextFragmentFmt},
 };
 
 /// Maximum point of map
@@ -40,7 +38,7 @@ pub enum LoreContents {
 
 impl<UI: Context> GameHandle<UI> {
     /// Draws player information in status like HP, XP, etc...
-    pub fn draw_player_info(&mut self) -> Result<(), fmt::Error> {
+    pub fn draw_player_info(&mut self) -> Result<(), UI::Error> {
         let mut s = self.ui.status();
         s.set_color(Color::Green)?;
         write!(s, "狐 ")?;
@@ -52,9 +50,9 @@ impl<UI: Context> GameHandle<UI> {
         write!(s, "{}g", self.player.gold)
     }
     /// Draws (or clears) lore
-    pub fn draw_lore(&mut self) -> Result<(), fmt::Error> {
+    pub fn draw_lore(&mut self) -> Result<(), UI::Error> {
         match self.lore {
-            LoreContents::Nothing | LoreContents::Custom(0) => self.ui.lore().clear().unwrap(),
+            LoreContents::Nothing | LoreContents::Custom(0) => self.ui.lore().clear()?,
             LoreContents::Custom(v) => self.lore = LoreContents::Custom(v - 1),
             LoreContents::Inventory => {
                 let mut l = self.ui.lore();
