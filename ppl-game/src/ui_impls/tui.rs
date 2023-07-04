@@ -172,9 +172,11 @@ impl Context {
     pub fn draw_borders(&self) -> Result<(), std::io::Error> {
         let mut f = std::io::stdout();
         write!(f, "\x1b[3;1H")?;
-        for _ in 0..crate::game::MAX_POINT.0 + 22 {
+        f.write_all(b"-[ MAP ]-")?;
+        for _ in 9..crate::game::MAX_POINT.0 {
             f.write_all(b"-")?;
         }
+        f.write_all(b"-+-[ LORE ]------------")?;
         for y in 4..=crate::game::MAX_POINT.1 + MAIN_OFFSET.1 + 1 {
             write!(f, "\x1b[{};{}H|", y, crate::game::MAX_POINT.0 + 2)?;
         }
