@@ -1,6 +1,6 @@
 use crate::{
     assets::blocks::{BlockBehavior, BlockUpdates},
-    things::{BlockUpdateContext, CollisionTy, PartialBlockState},
+    things::{BlockUpdateContext, CollisionTy},
     ui::{self, BlockTy},
 };
 
@@ -15,40 +15,33 @@ impl Wheat {
 }
 
 impl BlockBehavior for Wheat {
-    fn update<UI: ui::Context>(&mut self, _ctx: &mut BlockUpdateContext<'_, UI>) -> BlockUpdates {
-        if self.tick == 0 {
-            return Default::default();
-        }
-        self.tick -= 1;
+    fn update<UI: ui::Context>(
+        &mut self,
+        ctx: BlockUpdateContext<'_, UI>,
+    ) -> Result<BlockUpdates, UI::Error> {
+        if self.tick != 0 {
+            self.tick -= 1;
 
-        if self.tick == 0 {
-            BlockUpdates {
-                this: PartialBlockState {
-                    ty: Some(BlockTy::Wheat),
-                    collision: Some(CollisionTy::CanUse),
-                    ..Default::default()
-                },
-                ..Default::default()
+            if self.tick == 0 {
+                ctx.this.ty = BlockTy::Wheat;
+                ctx.this.collision = CollisionTy::CanUse;
             }
-        } else {
-            Default::default()
         }
+        BlockUpdates::new().ok()
     }
 
-    fn interact<UI: ui::Context>(&mut self, ctx: &mut BlockUpdateContext<'_, UI>) -> BlockUpdates {
-        if self.tick != 0 {
-            return Default::default();
-        }
-        ctx.game_handle.player.wheat += 10;
-        self.tick = 4;
+    fn interact<UI: ui::Context>(
+        &mut self,
+        ctx: BlockUpdateContext<'_, UI>,
+    ) -> Result<BlockUpdates, UI::Error> {
+        if self.tick == 0 {
+            ctx.game_handle.player.wheat += 10;
+            self.tick = 4;
 
-        BlockUpdates {
-            this: PartialBlockState {
-                collision: Some(CollisionTy::NoCollision),
-                ty: Some(BlockTy::GrowingWheat),
-                ..Default::default()
-            },
-            ..Default::default()
+            ctx.this.ty = BlockTy::GrowingWheat;
+            ctx.this.collision = CollisionTy::NoCollision;
         }
+
+        BlockUpdates::new().ok()
     }
 }

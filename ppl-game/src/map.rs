@@ -60,18 +60,12 @@ impl GameMaps {
             if thread_rng().gen_range(0..100) >= 15 {
                 continue;
             }
-            let updates = {
-                let mut update = BlockUpdateContext {
-                    game_handle,
-                    this: state,
-                    player_inventory,
-                };
-                block.update(&mut update)
+            let update = BlockUpdateContext {
+                game_handle,
+                this: state,
+                player_inventory,
             };
-            // TODO: deprecated
-            #[allow(deprecated)]
-            state.merge_with(updates.this);
-
+            let updates = block.update(update)?;
             states.push(state);
             other_updates.push(updates.other);
         }
@@ -94,26 +88,24 @@ impl GameMaps {
         pos: Point,
         game_handle: &mut GameHandle<UI>,
         player_inventory: &mut PlayerInventory,
-    ) {
+    ) -> Result<(), UI::Error> {
         let data = self
             .get_current_mut()
             .iter_mut()
             .find(|p| p.state.pos == pos);
         if let Some(BlockData { state, block }) = data {
-            let mut update = BlockUpdateContext {
+            let update = BlockUpdateContext {
                 game_handle,
                 this: state,
                 player_inventory,
             };
-            let updates = block.interact(&mut update);
-            // TODO: deprecated
-            #[allow(deprecated)]
-            state.merge_with(updates.this);
+            let updates = block.interact(update)?;
             updates.other.into_iter().for_each(|(p, s)| {
                 if let Some(data) = self.find_at_mut(p) {
                     data.state.merge_with(s);
                 }
             })
         }
+        Ok(())
     }
 }

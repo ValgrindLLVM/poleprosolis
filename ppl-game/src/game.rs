@@ -192,7 +192,7 @@ impl<UI: Context> Game<UI> {
                     self.player_pos,
                     &mut self.handle,
                     &mut self.player_inventory,
-                );
+                )?;
             }
         }
         Ok(())

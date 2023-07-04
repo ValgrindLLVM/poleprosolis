@@ -19,10 +19,6 @@ use crate::{
 /// /// Some update function...
 /// fn update() -> Result<BlockUpdates, ()> {
 ///     BlockUpdates::new() // creates new empty update
-///         .this(PartialBlockState {
-///             pos: Some(Point(10, 10)), // move self to Point(10, 10)
-///             ..Default::default()      // init other fields with None
-///         })                            // (don't update it)
 ///         .other(Point(1, 1), PartialBlockState {
 ///             pos: Some(Point(11, 10)), // move block at (1, 1) to
 ///             ..Default::default()      // (11, 10)
@@ -31,14 +27,10 @@ use crate::{
 /// }
 ///
 /// let updates = update().unwrap();
-/// assert_eq!(updates.this.pos, Some(Point(10, 10)));
 /// assert_eq!(updates.other.len(), 1);
 /// ```
 #[derive(Default)]
 pub struct BlockUpdates {
-    /// Update on self
-    #[deprecated(note = "use state provided by update context")]
-    pub this: PartialBlockState,
     /// Updates on others
     pub other: Vec<(Point, PartialBlockState)>,
 }
@@ -48,15 +40,6 @@ impl BlockUpdates {
     /// See [`BlockUpdates`] docs for examples.
     pub fn new() -> Self {
         Self::default()
-    }
-
-    /// Builder function, set `self.this` property.
-    /// See [`BlockUpdates`] docs for examples.
-    #[deprecated(note = "use state provided by update context")]
-    #[allow(deprecated)]
-    pub fn this(mut self, this: PartialBlockState) -> Self {
-        self.this = this;
-        self
     }
 
     /// Builder function, append other state to `self.other` vector.
@@ -85,12 +68,18 @@ impl BlockUpdates {
 #[enum_dispatch]
 pub trait BlockBehavior {
     /// Update block. Called every random tick
-    fn update<UI: ui::Context>(&mut self, ctx: &mut BlockUpdateContext<'_, UI>) -> BlockUpdates {
-        Default::default()
+    fn update<UI: ui::Context>(
+        &mut self,
+        ctx: BlockUpdateContext<'_, UI>,
+    ) -> Result<BlockUpdates, UI::Error> {
+        BlockUpdates::new().ok()
     }
     /// Interact with block.
-    fn interact<UI: ui::Context>(&mut self, ctx: &mut BlockUpdateContext<'_, UI>) -> BlockUpdates {
-        Default::default()
+    fn interact<UI: ui::Context>(
+        &mut self,
+        ctx: BlockUpdateContext<'_, UI>,
+    ) -> Result<BlockUpdates, UI::Error> {
+        BlockUpdates::new().ok()
     }
 }
 
