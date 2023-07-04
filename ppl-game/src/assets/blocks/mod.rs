@@ -6,7 +6,7 @@ pub mod generic;
 use generic::Generic;
 
 use crate::{
-    map::{PartialBlockState, UpdateContext},
+    things::{BlockUpdateContext, PartialBlockState},
     ui::{self, Point},
 };
 
@@ -14,7 +14,7 @@ use crate::{
 ///
 /// # Examples
 /// ```rust
-/// use ppl_game::{map::PartialBlockState, ui::Point, assets::blocks::BlockUpdates};
+/// use ppl_game::{things::PartialBlockState, ui::Point, assets::blocks::BlockUpdates};
 ///
 /// /// Some update function...
 /// fn update() -> Result<BlockUpdates, ()> {
@@ -37,6 +37,7 @@ use crate::{
 #[derive(Default)]
 pub struct BlockUpdates {
     /// Update on self
+    #[deprecated(note = "use state provided by update context")]
     pub this: PartialBlockState,
     /// Updates on others
     pub other: Vec<(Point, PartialBlockState)>,
@@ -51,6 +52,8 @@ impl BlockUpdates {
 
     /// Builder function, set `self.this` property.
     /// See [`BlockUpdates`] docs for examples.
+    #[deprecated(note = "use state provided by update context")]
+    #[allow(deprecated)]
     pub fn this(mut self, this: PartialBlockState) -> Self {
         self.this = this;
         self
@@ -82,11 +85,11 @@ impl BlockUpdates {
 #[enum_dispatch]
 pub trait BlockBehavior {
     /// Update block. Called every random tick
-    fn update<UI: ui::Context>(&mut self, ctx: &mut UpdateContext<'_, UI>) -> BlockUpdates {
+    fn update<UI: ui::Context>(&mut self, ctx: &mut BlockUpdateContext<'_, UI>) -> BlockUpdates {
         Default::default()
     }
     /// Interact with block.
-    fn interact<UI: ui::Context>(&mut self, ctx: &mut UpdateContext<'_, UI>) -> BlockUpdates {
+    fn interact<UI: ui::Context>(&mut self, ctx: &mut BlockUpdateContext<'_, UI>) -> BlockUpdates {
         Default::default()
     }
 }

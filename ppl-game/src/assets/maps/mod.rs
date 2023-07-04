@@ -1,4 +1,4 @@
-use crate::map::BlockData;
+use crate::things::BlockData;
 
 pub mod farm;
 

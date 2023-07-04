@@ -49,7 +49,7 @@
 
 use std::fmt;
 
-use crate::map::BlockState;
+use crate::things::BlockState;
 
 /// Represents an block.
 #[derive(Clone, Copy, PartialEq, Eq, Debug)]

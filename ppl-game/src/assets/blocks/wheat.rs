@@ -1,6 +1,6 @@
 use crate::{
     assets::blocks::{BlockBehavior, BlockUpdates},
-    map::{CollisionTy, PartialBlockState, UpdateContext},
+    things::{BlockUpdateContext, CollisionTy, PartialBlockState},
     ui::{self, BlockTy},
 };
 
@@ -15,7 +15,7 @@ impl Wheat {
 }
 
 impl BlockBehavior for Wheat {
-    fn update<UI: ui::Context>(&mut self, _ctx: &mut UpdateContext<'_, UI>) -> BlockUpdates {
+    fn update<UI: ui::Context>(&mut self, _ctx: &mut BlockUpdateContext<'_, UI>) -> BlockUpdates {
         if self.tick == 0 {
             return Default::default();
         }
@@ -35,11 +35,11 @@ impl BlockBehavior for Wheat {
         }
     }
 
-    fn interact<UI: ui::Context>(&mut self, ctx: &mut UpdateContext<'_, UI>) -> BlockUpdates {
+    fn interact<UI: ui::Context>(&mut self, ctx: &mut BlockUpdateContext<'_, UI>) -> BlockUpdates {
         if self.tick != 0 {
             return Default::default();
         }
-        ctx.game_handle.player.inventory.wheat += 10;
+        ctx.game_handle.player.wheat += 10;
         self.tick = 4;
 
         BlockUpdates {

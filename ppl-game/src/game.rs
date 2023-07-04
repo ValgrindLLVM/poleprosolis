@@ -1,8 +1,12 @@
 //! # Main game state
 
+use rand::{thread_rng, Rng};
+
 use crate::{
-    map::{BlockData, BlockState, CollisionTy, GameMaps},
-    player::Player,
+    assets::items::ItemBehavior,
+    map::GameMaps,
+    player::{Player, PlayerInventory},
+    things::{BlockData, BlockState, CollisionTy, ItemData, ItemUpdateContext},
     ui::{BlockFragment, BlockTy, Color, Context, Fragment, Point, TextFragment, TextFragmentFmt},
 };
 
@@ -12,6 +16,7 @@ pub const MAX_POINT: Point = Point(29, 11);
 /// Represent current game
 pub struct Game<UI: Context> {
     pub handle: GameHandle<UI>,
+    pub player_inventory: PlayerInventory,
     pub player_pos: Point,
     pub maps: GameMaps,
 }
@@ -58,15 +63,15 @@ impl<UI: Context> GameHandle<UI> {
                 let mut l = self.ui.lore();
                 l.set_color(Color::Green)?;
                 writeln!(l, "INVENTORY")?;
-                if self.player.inventory.wheat != 0 {
+                if self.player.wheat != 0 {
                     l.set_color(Color::Gold)?;
-                    writeln!(l, "Wheat ({})", self.player.inventory.wheat)?;
+                    writeln!(l, "Wheat ({})", self.player.wheat)?;
                 }
-                if self.player.inventory.water != 0 {
+                if self.player.water != 0 {
                     l.set_color(Color::Cyan)?;
                     write!(l, "Bucket of water")?;
-                    if self.player.inventory.water > 1 {
-                        write!(l, " ({})", self.player.inventory.water)?;
+                    if self.player.water > 1 {
+                        write!(l, " ({})", self.player.water)?;
                     }
                     writeln!(l)?;
                 }
@@ -84,6 +89,22 @@ impl<UI: Context> GameHandle<UI> {
             LoreContents::Nothing => self.lore = LoreContents::Inventory,
             _ => self.lore = LoreContents::Nothing,
         }
+    }
+
+    /// Do random tick that updates all items. Call it on interval or on player move, etc...
+    /// It updates only items, use [`Game::do_random_tick`] to update all things.
+    pub fn do_random_tick(&mut self, inventory: &mut PlayerInventory) -> Result<(), UI::Error> {
+        for ItemData { state, item } in &mut inventory.items {
+            if thread_rng().gen_range(0..100) >= 15 {
+                continue;
+            }
+            let update = ItemUpdateContext {
+                game_handle: self,
+                this: state,
+            };
+            let _updates = item.update(update)?;
+        }
+        Ok(())
     }
 }
 
@@ -106,6 +127,7 @@ impl<UI: Context> Game<UI> {
                 lore: LoreContents::Nothing,
             },
             player_pos: Point(0, 0),
+            player_inventory: Default::default(),
             maps: GameMaps::init(),
         }
     }
@@ -119,6 +141,13 @@ impl<UI: Context> Game<UI> {
         }
         m.set_pos(self.player_pos)?;
         m.put_block(BlockTy::Player)
+    }
+
+    /// Do random tick that updates all things. It automaticly calls on player move, etc...
+    pub fn do_random_tick(&mut self) -> Result<(), UI::Error> {
+        self.maps
+            .do_random_tick(&mut self.handle, &mut self.player_inventory)?;
+        self.handle.do_random_tick(&mut self.player_inventory)
     }
 
     /// Do [`GameAction`]
@@ -147,7 +176,7 @@ impl<UI: Context> Game<UI> {
                     break 'brk;
                 }
                 self.player_pos = pos;
-                self.maps.do_random_tick(&mut self.handle)?;
+                self.do_random_tick()?;
                 let mut m = self.handle.ui.main();
                 m.set_pos(old_pos)?;
                 m.put_block(
@@ -159,7 +188,11 @@ impl<UI: Context> Game<UI> {
                 m.put_block(BlockTy::Player)?;
             }
             Interact => {
-                self.maps.interact_at(self.player_pos, &mut self.handle);
+                self.maps.interact_at(
+                    self.player_pos,
+                    &mut self.handle,
+                    &mut self.player_inventory,
+                );
             }
         }
         Ok(())

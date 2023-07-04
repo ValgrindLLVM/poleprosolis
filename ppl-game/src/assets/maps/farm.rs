@@ -1,6 +1,6 @@
 use crate::{
     assets::blocks::{generic::Generic, wheat::Wheat},
-    map::{BlockData, CollisionTy},
+    things::{BlockData, CollisionTy},
     ui::{BlockTy, Point},
 };
 

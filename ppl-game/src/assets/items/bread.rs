@@ -1,4 +1,4 @@
-use super::Tier;
+use super::{ItemBehavior, ItemUpdates};
 
 #[derive(Clone, Debug, PartialEq)]
 pub enum Bread {
@@ -8,9 +8,21 @@ pub enum Bread {
         tick: u8,
     },
     Normal {
-        /// Bread tier
-        tier: Tier,
         /// Bread mass. Max: 255, min: 0.
         mass: u8,
     },
+}
+
+impl ItemBehavior for Bread {
+    fn update<UI: crate::ui::Context>(
+        &mut self,
+        _ctx: crate::things::ItemUpdateContext<UI>,
+    ) -> Result<ItemUpdates, UI::Error> {
+        match self {
+            Self::Cooking { tick: 3 } => *self = Self::Normal { mass: 123 },
+            Self::Cooking { tick } => *tick += 1,
+            _ => {}
+        }
+        Ok(ItemUpdates::new())
+    }
 }

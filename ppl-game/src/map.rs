@@ -1,12 +1,11 @@
 use rand::{thread_rng, Rng};
 
 use crate::{
-    assets::{
-        blocks::{Block, BlockBehavior},
-        maps::GameMap,
-    },
+    assets::{blocks::BlockBehavior, maps::GameMap},
     game::GameHandle,
-    ui::{self, BlockFragmentExt, BlockTy, Point},
+    player::PlayerInventory,
+    things::{BlockData, BlockState, BlockUpdateContext},
+    ui::{self, BlockFragmentExt, Point},
 };
 
 /// Game maps. Some maps may be not init. Default map is [`GameMap::Farm`]
@@ -49,9 +48,11 @@ impl GameMaps {
     }
 
     /// Do random tick that updates all blocks. Call it on interval or on player move, etc...
+    /// It updates only blocks, use [`Game::do_random_tick`] to update all things.
     pub fn do_random_tick<UI: ui::Context>(
         &mut self,
         game_handle: &mut GameHandle<UI>,
+        player_inventory: &mut PlayerInventory,
     ) -> Result<(), UI::Error> {
         let mut other_updates = Vec::new();
         let mut states: Vec<&BlockState> = Vec::new();
@@ -60,10 +61,17 @@ impl GameMaps {
                 continue;
             }
             let updates = {
-                let mut update = UpdateContext::new(game_handle);
+                let mut update = BlockUpdateContext {
+                    game_handle,
+                    this: state,
+                    player_inventory,
+                };
                 block.update(&mut update)
             };
+            // TODO: deprecated
+            #[allow(deprecated)]
             state.merge_with(updates.this);
+
             states.push(state);
             other_updates.push(updates.other);
         }
@@ -81,86 +89,31 @@ impl GameMaps {
     }
 
     /// Interact with block by it's position
-    pub fn interact_at<UI: ui::Context>(&mut self, pos: Point, game_handle: &mut GameHandle<UI>) {
+    pub fn interact_at<UI: ui::Context>(
+        &mut self,
+        pos: Point,
+        game_handle: &mut GameHandle<UI>,
+        player_inventory: &mut PlayerInventory,
+    ) {
         let data = self
             .get_current_mut()
             .iter_mut()
             .find(|p| p.state.pos == pos);
         if let Some(BlockData { state, block }) = data {
-            let mut update = UpdateContext::new(game_handle);
+            let mut update = BlockUpdateContext {
+                game_handle,
+                this: state,
+                player_inventory,
+            };
             let updates = block.interact(&mut update);
+            // TODO: deprecated
+            #[allow(deprecated)]
             state.merge_with(updates.this);
             updates.other.into_iter().for_each(|(p, s)| {
                 if let Some(data) = self.find_at_mut(p) {
                     data.state.merge_with(s);
                 }
             })
-        }
-    }
-}
-
-/// Block update/interact/etc context
-pub struct UpdateContext<'a, UI: ui::Context> {
-    pub game_handle: &'a mut GameHandle<UI>,
-}
-
-impl<'a, UI: ui::Context> UpdateContext<'a, UI> {
-    pub fn new(game_handle: &'a mut GameHandle<UI>) -> Self {
-        Self { game_handle }
-    }
-}
-
-/// Block state
-pub struct BlockState {
-    pub pos: Point,
-    pub collision: CollisionTy,
-    pub ty: BlockTy,
-}
-/// Partial block state. Can be merged into [`BlockState`] using [`BlockState::merge_with`]
-#[derive(Default)]
-pub struct PartialBlockState {
-    pub pos: Option<Point>,
-    pub collision: Option<CollisionTy>,
-    pub ty: Option<BlockTy>,
-}
-
-impl BlockState {
-    pub fn merge_with(&mut self, partial: PartialBlockState) {
-        if let Some(pos) = partial.pos {
-            self.pos = pos
-        }
-        if let Some(collision) = partial.collision {
-            self.collision = collision
-        }
-        if let Some(ty) = partial.ty {
-            self.ty = ty
-        }
-    }
-}
-
-/// Full block data in map
-pub struct BlockData {
-    /// Block generic state
-    pub state: BlockState,
-    /// Local block state and behavior
-    pub block: Block,
-}
-/// Type of collision
-pub enum CollisionTy {
-    /// Player can move into block
-    NoCollision,
-    /// Player can move into block and interact with it
-    CanUse,
-    /// Player can't move into block
-    Collision,
-}
-
-impl BlockData {
-    /// Creates new block
-    pub fn new(pos: Point, collision: CollisionTy, ty: BlockTy, block: Block) -> Self {
-        Self {
-            state: BlockState { pos, collision, ty },
-            block,
         }
     }
 }

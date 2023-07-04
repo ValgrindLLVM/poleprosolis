@@ -1,15 +1,15 @@
 //! # Player information
 
-use crate::assets::items::bread::Bread;
+use crate::things::ItemData;
 
 /// Represents player
-#[derive(Clone, Debug, PartialEq)]
 pub struct Player {
     pub health: u32,
     pub xp: u32,
     pub gold: u32,
 
-    pub inventory: PlayerInventory,
+    pub wheat: u32,
+    pub water: u32,
 }
 
 impl Player {
@@ -19,7 +19,8 @@ impl Player {
             health: 10,
             xp: 1,
             gold: 0,
-            inventory: Default::default(),
+            wheat: 0,
+            water: 0,
         }
     }
 }
@@ -30,10 +31,7 @@ impl Default for Player {
 }
 
 /// Represents player's inventory
-#[derive(Clone, Debug, PartialEq, Default)]
+#[derive(Default)]
 pub struct PlayerInventory {
-    pub wheat: u32,
-    pub water: u32,
-
-    pub breads: Vec<Bread>,
+    pub items: Vec<ItemData>,
 }
