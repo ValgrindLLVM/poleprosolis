@@ -175,7 +175,7 @@ impl Context {
         for _ in 0..crate::game::MAX_POINT.0 + 22 {
             f.write_all(b"-")?;
         }
-        for y in 4..=crate::game::MAX_POINT.1 + MAIN_OFFSET.1 {
+        for y in 4..=crate::game::MAX_POINT.1 + MAIN_OFFSET.1 + 1 {
             write!(f, "\x1b[{};{}H|", y, crate::game::MAX_POINT.0 + 2)?;
         }
         Ok(())
