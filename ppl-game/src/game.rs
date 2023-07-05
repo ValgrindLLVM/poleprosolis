@@ -110,10 +110,15 @@ impl<UI: Context> GameHandle<UI> {
 
 /// Action that player can do.
 pub enum GameAction {
+    /// Move player one block up (-1 by Y)
     MoveUp,
+    /// Move player one block down (+1 by Y)
     MoveDown,
+    /// Move player one block left (-1 by X)
     MoveLeft,
+    /// Move player one block right (+1 by X)
     MoveRight,
+    /// Interact with block at player position
     Interact,
 }
 

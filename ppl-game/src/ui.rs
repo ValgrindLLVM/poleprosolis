@@ -9,8 +9,7 @@
 //!
 //! ## Example usage
 //! ```no_run
-//! use std::fmt::Write;
-//! use ppl_game::ui::{Context, Block, Fragment, BlockFragment, Point};
+//! use ppl_game::ui::{Context, BlockTy, Fragment, BlockFragment, Point, TextFragmentFmt};
 //! use ppl_game::ui_impls::tui; // one of implementation. feature `tui`
 //!
 //! fn main() -> Result<(), Box<dyn std::error::Error>> {
@@ -28,10 +27,9 @@
 //!
 //!     let mut m = ctx.main();
 //!     m.set_pos(Point(1, 1))?;
-//!     m.put_block(Block::Wheat)?; // puts block W on (1; 1)
+//!     m.put_block(BlockTy::Wheat)?; // puts block W on (1; 1)
 //!
 //!     ctx.apply()?;
-//!     // Or use ctx.transaction(|ctx| {...})
 //!
 //!     Ok(())
 //! }
@@ -139,32 +137,6 @@ pub trait TextFragment: Fragment {
     /// Write a string. After action cursor position can be any
     fn put_str(&mut self, s: &str) -> Result<(), Self::Error>;
 }
-
-/// Extension for Context
-pub trait ContextExt: Context {
-    /// Perform (and apply) transaction.
-    ///
-    /// # Example
-    /// ```no_run
-    /// use std::fmt::Write;
-    /// use ppl_game::ui::{Context, ContextExt};
-    ///
-    /// _ = ctx.transaction(|ctx| {
-    ///     let mut l = ctx.lore();
-    ///     writeln!(l, "Hello world")?;
-    ///
-    ///     Ok(())
-    /// });
-    /// ```
-    fn transaction<F>(&mut self, f: F) -> Result<(), <Self as Context>::Error>
-    where
-        F: FnOnce(&mut Self) -> Result<(), <Self as Context>::Error>,
-    {
-        f(self)?;
-        self.apply()
-    }
-}
-impl<T: Context> ContextExt for T {}
 
 pub trait BlockFragmentExt: BlockFragment {
     /// Put block by it's state like [`BlockFragment::put_block`]

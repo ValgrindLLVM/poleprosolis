@@ -1,3 +1,14 @@
+//! # Game things (items and blocks)
+//!
+//! All things have state and data structs. Also it have update context with game handle and etc.
+//!
+//! | Name           | Item Type              | Block Type             |
+//! |----------------|------------------------|------------------------|
+//! | State          | [`ItemState`]          | [`BlockState`]         |
+//! | Inner data     | [`Item`]               | [`Block`]              |
+//! | Data           | [`ItemData`]           | [`BlockData`]          |
+//! | Update context | [`ItemUpdateContext`]  | [`BlockUpdateContext`] |
+
 use crate::{
     assets::{blocks::Block, items::Item},
     game::GameHandle,
@@ -60,6 +71,26 @@ pub struct PartialBlockState {
 }
 
 impl BlockState {
+    /// Merges with partial state.
+    ///
+    /// # Example
+    /// ```
+    /// use ppl_game::{things::{BlockState, PartialBlockState, CollisionTy}, ui::{BlockTy, Point}};
+    ///
+    /// let mut block = BlockState {
+    ///     ty: BlockTy::GrowingWheat,
+    ///     collision: CollisionTy::NoCollision,
+    ///     pos: Point(1, 1),
+    /// };
+    /// let partial = PartialBlockState {
+    ///     ty: Some(BlockTy::Wheat),
+    ///     ..Default::default()
+    /// };
+    ///
+    /// block.merge_with(partial);
+    /// assert_eq!(block.ty, BlockTy::Wheat);
+    /// assert_eq!(block.pos, Point(1, 1));
+    /// ```
     pub fn merge_with(&mut self, partial: PartialBlockState) {
         if let Some(pos) = partial.pos {
             self.pos = pos

@@ -43,9 +43,11 @@ pub fn termios_restore(v: Termios) -> Result<(), std::io::Error> {
 ///
 /// # Example
 /// ```no_run
+/// use ppl_game::ui_impls::tui::TermiosGuard;
+///
 /// let value = 42;
 /// {
-///     let _guard = TermIOsGuard::init(value).expect("termios");
+///     let _guard = TermiosGuard::init(value).expect("termios");
 ///     println!("this text written with tui termios settings");
 ///     // *_guard drops*
 /// }
@@ -54,7 +56,7 @@ pub fn termios_restore(v: Termios) -> Result<(), std::io::Error> {
 ///
 /// # Notes
 /// On created this guard sets the main settings like "no echo" and
-/// cursor style, but it doesn't clears the screen. Also, on drop screen will not
+/// cursor style and also clears the screen. On drop screen will not
 /// be restored.
 pub struct TermiosGuard<T: ?Sized> {
     _guard: TermiosInnerGuard,

@@ -48,7 +48,7 @@ impl GameMaps {
     }
 
     /// Do random tick that updates all blocks. Call it on interval or on player move, etc...
-    /// It updates only blocks, use [`Game::do_random_tick`] to update all things.
+    /// It updates only blocks, use [`crate::game::Game::do_random_tick`] to update all things.
     pub fn do_random_tick<UI: ui::Context>(
         &mut self,
         game_handle: &mut GameHandle<UI>,

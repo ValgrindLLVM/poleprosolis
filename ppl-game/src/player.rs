@@ -1,4 +1,4 @@
-//! # Player information
+//! Player information
 
 use crate::things::ItemData;
 
