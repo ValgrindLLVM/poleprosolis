@@ -236,6 +236,17 @@ impl<UI: Context> Game<UI> {
                 )?;
                 m.set_pos(pos)?;
                 m.put_block(BlockTy::Player)?;
+                drop(m);
+                if let Some(BlockData { state: BlockState { collision: CollisionTy::CanUse, .. }, .. }) = self.maps.find_at(pos) {
+                    let mut s = self.handle.ui.status();
+                    s.set_line(1)?;
+                    s.set_color(Color::Blue)?;
+                    write!(s, " [can use]")?;
+                } else {
+                    let mut s = self.handle.ui.status();
+                    // FIXME: clear one line, not a whole fragment
+                    s.clear()?;
+                }
             }
             Interact => {
                 self.maps.interact_at(
