@@ -6,7 +6,7 @@ use crate::{
     assets::items::ItemBehavior,
     map::GameMaps,
     player::{Player, PlayerInventory},
-    things::{BlockData, BlockState, CollisionTy, ItemData, ItemUpdateContext},
+    things::{BlockData, BlockState, CollisionTy, ItemData, ItemUpdateContext, ItemTier},
     ui::{BlockFragment, BlockTy, Color, Context, Fragment, Point, TextFragment, TextFragmentFmt},
 };
 
@@ -96,14 +96,17 @@ impl<UI: Context> GameHandle<UI> {
                 for (no, item) in items {
                     write!(l, "{}. ", no + 1)?;
                     l.set_color(item.item.color())?;
-                    write!(l, "{} ", item.item.name())?;
+                    write!(l, "{}", item.item.name())?;
+                    if item.state.tier != ItemTier::Common {
+                        l.set_color(Color::Normal)?;
+                        write!(l, " ")?;
+                        item.state.tier.suffix(&mut l)?;
+                    }
                     l.set_color(Color::Normal)?;
                     let meta = item.item.meta();
                     if !meta.is_empty() {
-                        write!(l, "({meta}) ")?;
+                        write!(l, " ({meta})")?;
                     }
-                    item.state.tier.suffix(&mut l)?;
-                    l.set_color(Color::Normal)?;
                     writeln!(l)?;
                 }
             }

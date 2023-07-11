@@ -9,6 +9,10 @@
 //! | Data           | [`ItemData`]           | [`BlockData`]          |
 //! | Update context | [`ItemUpdateContext`]  | [`BlockUpdateContext`] |
 
+use std::ops::RangeInclusive;
+
+use rand::{thread_rng, Rng};
+
 use crate::{
     assets::{blocks::Block, items::Item},
     game::GameHandle,
@@ -63,6 +67,33 @@ pub struct ItemData {
 }
 
 impl ItemTier {
+    fn rnd_minmax(self) -> (u8, u8) {
+        match self {
+            Self::Common => (1, 20),
+            Self::LevelC => (21, 35),
+            Self::LevelB => (36, 45),
+            Self::LevelA => (46, 50),
+            Self::LevelPlus => (51, 51),
+        }
+    }
+    fn rnd_get(id: u8) -> Self {
+        match id {
+            1..=20 => Self::Common,
+            21..=35 => Self::LevelC,
+            36..=45 => Self::LevelB,
+            46..=50 => Self::LevelA,
+            51 => Self::LevelPlus,
+            _ => panic!("invalid value `{id}`"),
+        }
+    }
+
+    pub fn rand(range: RangeInclusive<Self>) -> Self {
+        let min = range.start().rnd_minmax().0;
+        let max = range.end().rnd_minmax().1;
+        let id = thread_rng().gen_range(min..=max);
+        Self::rnd_get(id)
+    }
+
     /// Puts suffix to [`TextFragment`]
     pub fn suffix<T>(self, l: &mut T) -> Result<(), T::Error>
     where

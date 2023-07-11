@@ -1,7 +1,9 @@
 use std::borrow::Cow;
 
+use rand::{thread_rng, Rng};
+
 use crate::{
-    things::{ItemData, ItemState},
+    things::{ItemData, ItemState, ItemTier},
     ui::Color,
 };
 
@@ -53,10 +55,14 @@ impl ItemBehavior for Bread {
 
     fn update<UI: crate::ui::Context>(
         &mut self,
-        _ctx: crate::things::ItemUpdateContext<UI>,
+        ctx: crate::things::ItemUpdateContext<UI>,
     ) -> Result<ItemUpdates, UI::Error> {
         match self {
-            Self::Baking { tick: 3 } => *self = Self::Normal { mass: 123 },
+            Self::Baking { tick: 3 } => {
+                let mass = thread_rng().gen_range(5..=75);
+                *self = Self::Normal { mass };
+                ctx.this.tier = ItemTier::rand(ItemTier::Common..=ItemTier::LevelA);
+            }
             Self::Baking { tick } => *tick += 1,
             _ => {}
         }
