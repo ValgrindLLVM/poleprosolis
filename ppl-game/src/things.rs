@@ -9,11 +9,13 @@
 //! | Data           | [`ItemData`]           | [`BlockData`]          |
 //! | Update context | [`ItemUpdateContext`]  | [`BlockUpdateContext`] |
 
+use std::fmt::Display;
+
 use crate::{
     assets::{blocks::Block, items::Item},
     game::GameHandle,
     player::PlayerInventory,
-    ui::{self, BlockTy, Point},
+    ui::{self, BlockTy, Point, Color},
 };
 
 /// Thing update/interact/etc context
@@ -38,8 +40,9 @@ impl<'a, UI: ui::Context, T> UpdateContext<'a, UI, T> {
 }
 
 /// Tier of item.
-#[derive(Clone, Copy, PartialEq, Eq, Debug)]
+#[derive(Clone, Copy, PartialEq, Eq, Debug, Default)]
 pub enum ItemTier {
+    #[default]
     Common,
     Uncommon,
     Rare,
@@ -48,12 +51,38 @@ pub enum ItemTier {
     Platinum,
 }
 /// Item state
+#[derive(Default)]
 pub struct ItemState {
     pub tier: ItemTier,
 }
 pub struct ItemData {
     pub state: ItemState,
     pub item: Item,
+}
+
+impl ItemTier {
+    pub fn color(self) -> Color {
+        match self {
+            Self::Common => Color::Normal,
+            Self::Uncommon => Color::Normal,
+            Self::Rare => Color::Cyan,
+            Self::Silver => Color::Blue,
+            Self::Gold => Color::Gold,
+            Self::Platinum => Color::Magenta,
+        }
+    }
+}
+impl Display for ItemTier {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            Self::Common => write!(f, "Common"),
+            Self::Uncommon => write!(f, "Uncommon"),
+            Self::Rare => write!(f, "Rare"),
+            Self::Silver => write!(f, "SILVER"),
+            Self::Gold => write!(f, "GOLD"),
+            Self::Platinum => write!(f, "PLATINUM"),
+        }
+    }
 }
 
 /// Block state

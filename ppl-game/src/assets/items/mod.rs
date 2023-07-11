@@ -1,3 +1,5 @@
+use std::borrow::Cow;
+
 use enum_dispatch::enum_dispatch;
 
 use crate::{things::ItemUpdateContext, ui};
@@ -24,6 +26,9 @@ impl ItemUpdates {
 #[allow(unused_variables)]
 #[enum_dispatch]
 pub trait ItemBehavior {
+    /// Item name. May be prefixed with "Rare" or other kind of [`ItemTier`]
+    fn name(&self) -> Cow<'_, str>;
+
     /// Update item. Called every random tick
     fn update<UI: ui::Context>(
         &mut self,

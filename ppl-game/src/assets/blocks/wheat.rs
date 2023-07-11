@@ -1,5 +1,5 @@
 use crate::{
-    assets::blocks::{BlockBehavior, BlockUpdates},
+    assets::{blocks::{BlockBehavior, BlockUpdates}, items::bread::Bread},
     things::{BlockUpdateContext, CollisionTy},
     ui::{self, BlockTy},
 };
@@ -40,6 +40,8 @@ impl BlockBehavior for Wheat {
 
             ctx.this.ty = BlockTy::GrowingWheat;
             ctx.this.collision = CollisionTy::NoCollision;
+
+            ctx.player_inventory.items.push(Bread::new());
         }
 
         BlockUpdates::new().ok()

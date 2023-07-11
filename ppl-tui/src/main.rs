@@ -23,13 +23,14 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 
             b'e' => game.do_action(GameAction::Interact)?,
             b'i' => game.handle.toggle_inventory(),
+            b'o' => game.handle.toggle_items(),
 
             b'q' => break,
 
             _ => continue,
         }
 
-        game.handle.draw_lore()?;
+        game.draw_lore()?;
         game.handle.draw_player_info()?;
         game.handle.ui.apply()?;
     }

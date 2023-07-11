@@ -35,6 +35,8 @@ pub enum LoreContents {
     Nothing,
     /// Inventory
     Inventory,
+    /// Items with page
+    Items(u8),
     /// Endless custom content, set by some game thing.
     CustomEndless,
     /// Custom content, set by some game thing. Erases if ticks less than zero.
@@ -55,9 +57,10 @@ impl<UI: Context> GameHandle<UI> {
         write!(s, "{}g", self.player.gold)
     }
     /// Draws (or clears) lore
-    pub fn draw_lore(&mut self) -> Result<(), UI::Error> {
+    pub fn draw_lore(&mut self, inventory: &PlayerInventory) -> Result<(), UI::Error> {
+        self.ui.lore().clear()?;
         match self.lore {
-            LoreContents::Nothing | LoreContents::Custom(0) => self.ui.lore().clear()?,
+            LoreContents::Nothing | LoreContents::Custom(0) | LoreContents::CustomEndless => {},
             LoreContents::Custom(v) => self.lore = LoreContents::Custom(v - 1),
             LoreContents::Inventory => {
                 let mut l = self.ui.lore();
@@ -77,7 +80,20 @@ impl<UI: Context> GameHandle<UI> {
                 }
                 l.set_color(Color::Normal)?;
             }
-            _ => {}
+            LoreContents::Items(page) => {
+                let mut l = self.ui.lore();
+                l.set_color(Color::Green)?;
+                write!(l, "INVENTORY")?;
+                l.set_color(Color::Normal)?;
+                writeln!(l, " page #{}", page as u16 + 1)?;
+                for item in inventory.items.iter().skip(page as usize * 2).take(2) {
+                    writeln!(l, "{}", item.item.name())?;
+                    l.set_color(item.state.tier.color())?;
+                    writeln!(l, " {}", item.state.tier)?;
+                    l.set_color(Color::Normal)?;
+                    writeln!(l)?;
+                }
+            }
         }
 
         Ok(())
@@ -86,8 +102,16 @@ impl<UI: Context> GameHandle<UI> {
     /// Toggle inventory in lore
     pub fn toggle_inventory(&mut self) {
         match self.lore {
-            LoreContents::Nothing => self.lore = LoreContents::Inventory,
-            _ => self.lore = LoreContents::Nothing,
+            LoreContents::Inventory => self.lore = LoreContents::Nothing,
+            _ => self.lore = LoreContents::Inventory,
+        }
+    }
+
+    /// Show next (or first) page of items in lore
+    pub fn toggle_items(&mut self) {
+        match &mut self.lore {
+            LoreContents::Items(v) => *v = v.saturating_add(1),
+            _ => self.lore = LoreContents::Items(0),
         }
     }
 
@@ -146,6 +170,11 @@ impl<UI: Context> Game<UI> {
         }
         m.set_pos(self.player_pos)?;
         m.put_block(BlockTy::Player)
+    }
+
+    /// Draw (or clear) lore
+    pub fn draw_lore(&mut self) -> Result<(), UI::Error> {
+        self.handle.draw_lore(&self.player_inventory)
     }
 
     /// Do random tick that updates all things. It automaticly calls on player move, etc...
