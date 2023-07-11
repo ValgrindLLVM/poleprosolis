@@ -1,5 +1,8 @@
 use crate::{
-    assets::{blocks::{BlockBehavior, BlockUpdates}, items::bread::Bread},
+    assets::{
+        blocks::{BlockBehavior, BlockUpdates},
+        items::bread::Bread,
+    },
     things::{BlockUpdateContext, CollisionTy},
     ui::{self, BlockTy},
 };

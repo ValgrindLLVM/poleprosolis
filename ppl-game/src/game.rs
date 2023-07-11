@@ -6,7 +6,7 @@ use crate::{
     assets::items::ItemBehavior,
     map::GameMaps,
     player::{Player, PlayerInventory},
-    things::{BlockData, BlockState, CollisionTy, ItemData, ItemUpdateContext, ItemTier},
+    things::{BlockData, BlockState, CollisionTy, ItemData, ItemTier, ItemUpdateContext},
     ui::{BlockFragment, BlockTy, Color, Context, Fragment, Point, TextFragment, TextFragmentFmt},
 };
 
@@ -237,7 +237,15 @@ impl<UI: Context> Game<UI> {
                 m.set_pos(pos)?;
                 m.put_block(BlockTy::Player)?;
                 drop(m);
-                if let Some(BlockData { state: BlockState { collision: CollisionTy::CanUse, .. }, .. }) = self.maps.find_at(pos) {
+                if let Some(BlockData {
+                    state:
+                        BlockState {
+                            collision: CollisionTy::CanUse,
+                            ..
+                        },
+                    ..
+                }) = self.maps.find_at(pos)
+                {
                     let mut s = self.handle.ui.status();
                     s.set_line(1)?;
                     s.set_color(Color::Blue)?;
