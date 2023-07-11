@@ -29,6 +29,16 @@ pub trait ItemBehavior {
     /// Item name. May be prefixed with "Rare" or other kind of [`ItemTier`]
     fn name(&self) -> Cow<'_, str>;
 
+    /// Item meta. Shows after name without color.
+    fn meta(&self) -> Cow<'_, str> {
+        Cow::Borrowed("")
+    }
+
+    /// Item color.
+    fn color(&self) -> ui::Color {
+        ui::Color::Normal
+    }
+
     /// Update item. Called every random tick
     fn update<UI: ui::Context>(
         &mut self,

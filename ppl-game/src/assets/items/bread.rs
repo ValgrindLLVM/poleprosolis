@@ -1,6 +1,9 @@
 use std::borrow::Cow;
 
-use crate::things::{ItemData, ItemState};
+use crate::{
+    things::{ItemData, ItemState},
+    ui::Color,
+};
 
 use super::{ItemBehavior, ItemUpdates};
 
@@ -31,6 +34,20 @@ impl ItemBehavior for Bread {
         match self {
             Self::Baking { .. } => Cow::Borrowed("Baking bread"),
             Self::Normal { .. } => Cow::Borrowed("Bread"),
+        }
+    }
+
+    fn meta(&self) -> Cow<'_, str> {
+        match self {
+            Self::Baking { .. } => Cow::Borrowed(""),
+            Self::Normal { mass } => Cow::Owned(format!("{}g", mass)),
+        }
+    }
+
+    fn color(&self) -> Color {
+        match self {
+            Self::Baking { .. } => Color::Normal,
+            Self::Normal { .. } => Color::Magenta,
         }
     }
 

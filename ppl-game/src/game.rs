@@ -94,8 +94,14 @@ impl<UI: Context> GameHandle<UI> {
                     .skip(page as usize * 9)
                     .take(9);
                 for (no, item) in items {
-                    write!(l, "{}. {} ", no + 1, item.item.name())?;
+                    write!(l, "{}. ", no + 1)?;
+                    l.set_color(item.item.color())?;
+                    write!(l, "{} ", item.item.name())?;
                     l.set_color(Color::Normal)?;
+                    let meta = item.item.meta();
+                    if !meta.is_empty() {
+                        write!(l, "({meta}) ")?;
+                    }
                     item.state.tier.suffix(&mut l)?;
                     l.set_color(Color::Normal)?;
                     writeln!(l)?;
