@@ -141,7 +141,7 @@ impl ui::Context for Context {
         { LORE_OFFSET.0 },
         { LORE_OFFSET.1 },
         0,
-        { crate::game::MAX_POINT.1 },
+        { crate::game::MAX_POINT.1 + 1 },
         false,
     >;
 
@@ -253,11 +253,11 @@ impl<
 
     fn clear(&mut self) -> Result<(), Self::Error> {
         if LIMITED {
-            for y in 0..=LINES {
+            for y in 0..LINES {
                 write!(std::io::stdout(), "\x1b[{};{}H\x1b[1K", Y + y + 1, X_MAX)?;
             }
         } else {
-            for y in 0..=LINES {
+            for y in 0..LINES {
                 write!(std::io::stdout(), "\x1b[{};{}H\x1b[K", Y + y + 1, X)?;
             }
         }
