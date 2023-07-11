@@ -9,13 +9,11 @@
 //! | Data           | [`ItemData`]           | [`BlockData`]          |
 //! | Update context | [`ItemUpdateContext`]  | [`BlockUpdateContext`] |
 
-use std::fmt::Display;
-
 use crate::{
     assets::{blocks::Block, items::Item},
     game::GameHandle,
     player::PlayerInventory,
-    ui::{self, BlockTy, Point, Color},
+    ui::{self, BlockTy, Color, Point},
 };
 
 /// Thing update/interact/etc context
@@ -42,13 +40,17 @@ impl<'a, UI: ui::Context, T> UpdateContext<'a, UI, T> {
 /// Tier of item.
 #[derive(Clone, Copy, PartialEq, Eq, Debug, Default)]
 pub enum ItemTier {
+    /// Common tier, without any "выебона"
     #[default]
     Common,
-    Uncommon,
-    Rare,
-    Silver,
-    Gold,
-    Platinum,
+    /// Level "I" (1)
+    LevelC,
+    /// Level "II" (2)
+    LevelB,
+    /// Level "III" (3)
+    LevelA,
+    /// Level "III+" (3+)
+    LevelPlus,
 }
 /// Item state
 #[derive(Default)]
@@ -61,27 +63,29 @@ pub struct ItemData {
 }
 
 impl ItemTier {
-    pub fn color(self) -> Color {
+    /// Puts suffix to [`TextFragment`]
+    pub fn suffix<T>(self, l: &mut T) -> Result<(), T::Error>
+    where
+        T: ui::TextFragment,
+    {
         match self {
-            Self::Common => Color::Normal,
-            Self::Uncommon => Color::Normal,
-            Self::Rare => Color::Cyan,
-            Self::Silver => Color::Blue,
-            Self::Gold => Color::Gold,
-            Self::Platinum => Color::Magenta,
-        }
-    }
-}
-impl Display for ItemTier {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+            Self::Common => {}
+            Self::LevelC => {}
+            // TODO: white
+            Self::LevelB => l.set_color(Color::Normal)?,
+            Self::LevelA => l.set_color(Color::Blue)?,
+            Self::LevelPlus => l.set_color(Color::Magenta)?,
+        };
+
         match self {
-            Self::Common => write!(f, "Common"),
-            Self::Uncommon => write!(f, "Uncommon"),
-            Self::Rare => write!(f, "Rare"),
-            Self::Silver => write!(f, "SILVER"),
-            Self::Gold => write!(f, "GOLD"),
-            Self::Platinum => write!(f, "PLATINUM"),
-        }
+            Self::Common => {}
+            Self::LevelC => l.put_str("I")?,
+            Self::LevelB => l.put_str("II")?,
+            Self::LevelA => l.put_str("III")?,
+            Self::LevelPlus => l.put_str("III+")?,
+        };
+
+        l.set_color(Color::Normal)
     }
 }
 

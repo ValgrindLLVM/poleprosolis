@@ -60,7 +60,7 @@ impl<UI: Context> GameHandle<UI> {
     pub fn draw_lore(&mut self, inventory: &PlayerInventory) -> Result<(), UI::Error> {
         self.ui.lore().clear()?;
         match self.lore {
-            LoreContents::Nothing | LoreContents::Custom(0) | LoreContents::CustomEndless => {},
+            LoreContents::Nothing | LoreContents::Custom(0) | LoreContents::CustomEndless => {}
             LoreContents::Custom(v) => self.lore = LoreContents::Custom(v - 1),
             LoreContents::Inventory => {
                 let mut l = self.ui.lore();
@@ -86,10 +86,17 @@ impl<UI: Context> GameHandle<UI> {
                 write!(l, "INVENTORY")?;
                 l.set_color(Color::Normal)?;
                 writeln!(l, " page #{}", page as u16 + 1)?;
-                for item in inventory.items.iter().skip(page as usize * 2).take(2) {
-                    writeln!(l, "{}", item.item.name())?;
-                    l.set_color(item.state.tier.color())?;
-                    writeln!(l, " {}", item.state.tier)?;
+                writeln!(l)?;
+                let items = inventory
+                    .items
+                    .iter()
+                    .enumerate()
+                    .skip(page as usize * 9)
+                    .take(9);
+                for (no, item) in items {
+                    write!(l, "{}. {} ", no + 1, item.item.name())?;
+                    l.set_color(Color::Normal)?;
+                    item.state.tier.suffix(&mut l)?;
                     l.set_color(Color::Normal)?;
                     writeln!(l)?;
                 }
