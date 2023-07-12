@@ -53,7 +53,7 @@ use crate::things::BlockState;
 #[derive(Clone, Copy, PartialEq, Eq, Debug)]
 pub enum BlockTy {
     Air,
-    
+
     Player,
     NPCFarmer,
 
