@@ -42,6 +42,10 @@ impl BlockBehavior for Wheat {
         if self.tick == 0 {
             let limits = ctx.player_limits();
 
+            if ctx.game_handle.player.wheat == limits.wheat {
+                return BlockUpdates::new().ok();
+            }
+
             ctx.game_handle.player.wheat += thread_rng().gen_range(1..=3);
             if ctx.game_handle.player.wheat > limits.wheat {
                 ctx.game_handle.player.wheat = limits.wheat;
