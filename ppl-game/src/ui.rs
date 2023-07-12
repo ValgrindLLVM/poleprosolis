@@ -75,13 +75,16 @@ pub enum Color {
     RareItem,
     SpecialItem,
 
-    GrowingWheat,
-    Wheat,
-    Water,
+    GrowingWheatBlock,
+    WheatBlock,
+    WaterBlock,
 
     Health,
     XP,
     Gold,
+    Wheat,
+    Water,
+    MaxValue,
 }
 
 /// Represents a point(X; Y).

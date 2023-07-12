@@ -311,13 +311,16 @@ impl<
             RareItem => s.write_all(b"\x1b[0;34m"),
             SpecialItem => s.write_all(b"\x1b[0;35m"),
 
-            GrowingWheat => s.write_all(b"\x1b[0;32m"),
-            Wheat => s.write_all(b"\x1b[0;93m"),
-            Water => s.write_all(b"\x1b[0;34m"),
+            GrowingWheatBlock => s.write_all(b"\x1b[0;32m"),
+            WheatBlock => s.write_all(b"\x1b[0;93m"),
+            WaterBlock => s.write_all(b"\x1b[0;34m"),
 
             Health => s.write_all(b"\x1b[1;31m"),
             XP => s.write_all(b"\x1b[0;36m"),
             Gold => s.write_all(b"\x1b[0;93m"),
+            Wheat => s.write_all(b"\x1b[1;93m"),
+            Water => s.write_all(b"\x1b[1;34m"),
+            MaxValue => s.write_all(b"\x1b[0;32m"),
         }
     }
 

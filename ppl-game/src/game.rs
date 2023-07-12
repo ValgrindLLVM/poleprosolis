@@ -47,14 +47,34 @@ impl<UI: Context> GameHandle<UI> {
     /// Draws player information in status like HP, XP, etc...
     pub fn draw_player_info(&mut self) -> Result<(), UI::Error> {
         let mut s = self.ui.status();
-        s.set_color(Color::GrowingWheat)?;
+        s.set_color(Color::GrowingWheatBlock)?;
         write!(s, "狐 ")?;
         s.set_color(Color::Health)?;
         write!(s, "{} HP ", self.player.health)?;
         s.set_color(Color::XP)?;
         write!(s, "{:3} XP ", self.player.xp)?;
         s.set_color(Color::Gold)?;
-        write!(s, "{:4}g", self.player.gold)
+        write!(s, "{:4}g ", self.player.gold)?;
+
+        // Wheat
+        s.set_color(Color::Wheat)?;
+        write!(s, "{:3}", self.player.wheat)?;
+        s.set_color(Color::Normal)?;
+        write!(s, "/")?;
+        s.set_color(Color::MaxValue)?;
+        write!(s, "500")?;
+        s.set_color(Color::Wheat)?;
+        write!(s, " wheat ")?;
+
+        // Water
+        s.set_color(Color::Water)?;
+        write!(s, "{}", self.player.water)?;
+        s.set_color(Color::Normal)?;
+        write!(s, "/")?;
+        s.set_color(Color::MaxValue)?;
+        write!(s, "4")?;
+        s.set_color(Color::Water)?;
+        write!(s, " water ")
     }
     /// Draws (or clears) lore
     pub fn draw_lore(&mut self, inventory: &PlayerInventory) -> Result<(), UI::Error> {
@@ -64,7 +84,7 @@ impl<UI: Context> GameHandle<UI> {
             LoreContents::Custom(v) => self.lore = LoreContents::Custom(v - 1),
             LoreContents::Inventory => {
                 let mut l = self.ui.lore();
-                l.set_color(Color::GrowingWheat)?;
+                l.set_color(Color::GrowingWheatBlock)?;
                 writeln!(l, "INVENTORY")?;
                 if self.player.wheat != 0 {
                     l.set_color(Color::Gold)?;
@@ -82,7 +102,7 @@ impl<UI: Context> GameHandle<UI> {
             }
             LoreContents::Items(page) => {
                 let mut l = self.ui.lore();
-                l.set_color(Color::GrowingWheat)?;
+                l.set_color(Color::GrowingWheatBlock)?;
                 write!(l, "INVENTORY")?;
                 l.set_color(Color::Normal)?;
                 writeln!(l, " page #{}", page as u16 + 1)?;
@@ -213,7 +233,7 @@ impl<UI: Context> Game<UI> {
         {
             let mut s = self.handle.ui.status();
             s.set_line(1)?;
-            s.set_color(Color::Water)?;
+            s.set_color(Color::WaterBlock)?;
             write!(s, " [can use]")
         } else {
             let mut s = self.handle.ui.status();
