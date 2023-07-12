@@ -1,3 +1,5 @@
+use rand::{thread_rng, Rng};
+
 use crate::{
     assets::{
         blocks::{BlockBehavior, BlockUpdates},
@@ -38,8 +40,8 @@ impl BlockBehavior for Wheat {
         ctx: BlockUpdateContext<'_, UI>,
     ) -> Result<BlockUpdates, UI::Error> {
         if self.tick == 0 {
-            ctx.game_handle.player.wheat += 10;
-            self.tick = 4;
+            ctx.game_handle.player.wheat += thread_rng().gen_range(1..=3);
+            self.tick = 7;
 
             ctx.this.ty = BlockTy::GrowingWheat;
             ctx.this.collision = CollisionTy::NoCollision;
