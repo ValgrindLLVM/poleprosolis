@@ -49,7 +49,7 @@ impl ItemBehavior for Bread {
     fn color(&self) -> Color {
         match self {
             Self::Baking { .. } => Color::Normal,
-            Self::Normal { .. } => Color::Magenta,
+            Self::Normal { .. } => Color::SpecialItem,
         }
     }
 

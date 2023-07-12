@@ -104,8 +104,8 @@ impl ItemTier {
             Self::LevelC => {}
             // TODO: white
             Self::LevelB => l.set_color(Color::Normal)?,
-            Self::LevelA => l.set_color(Color::Blue)?,
-            Self::LevelPlus => l.set_color(Color::Magenta)?,
+            Self::LevelA => l.set_color(Color::RareItem)?,
+            Self::LevelPlus => l.set_color(Color::SpecialItem)?,
         };
 
         match self {

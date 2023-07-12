@@ -308,12 +308,15 @@ impl<
         let mut s = std::io::stdout();
         match color {
             Normal => s.write_all(b"\x1b[0m"),
-            Red => s.write_all(b"\x1b[0;31m"),
-            BoldRed => s.write_all(b"\x1b[1;31m"),
-            Green => s.write_all(b"\x1b[0;32m"),
-            Blue => s.write_all(b"\x1b[0;34m"),
-            Magenta => s.write_all(b"\x1b[0;35m"),
-            Cyan => s.write_all(b"\x1b[0;36m"),
+            RareItem => s.write_all(b"\x1b[0;34m"),
+            SpecialItem => s.write_all(b"\x1b[0;35m"),
+
+            GrowingWheat => s.write_all(b"\x1b[0;32m"),
+            Wheat => s.write_all(b"\x1b[0;93m"),
+            Water => s.write_all(b"\x1b[0;34m"),
+
+            Health => s.write_all(b"\x1b[1;31m"),
+            XP => s.write_all(b"\x1b[0;36m"),
             Gold => s.write_all(b"\x1b[0;93m"),
         }
     }

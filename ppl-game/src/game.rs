@@ -47,14 +47,14 @@ impl<UI: Context> GameHandle<UI> {
     /// Draws player information in status like HP, XP, etc...
     pub fn draw_player_info(&mut self) -> Result<(), UI::Error> {
         let mut s = self.ui.status();
-        s.set_color(Color::Green)?;
+        s.set_color(Color::GrowingWheat)?;
         write!(s, "狐 ")?;
-        s.set_color(Color::BoldRed)?;
+        s.set_color(Color::Health)?;
         write!(s, "{} HP ", self.player.health)?;
-        s.set_color(Color::Cyan)?;
-        write!(s, "{} XP ", self.player.xp)?;
+        s.set_color(Color::XP)?;
+        write!(s, "{:3} XP ", self.player.xp)?;
         s.set_color(Color::Gold)?;
-        write!(s, "{}g", self.player.gold)
+        write!(s, "{:4}g", self.player.gold)
     }
     /// Draws (or clears) lore
     pub fn draw_lore(&mut self, inventory: &PlayerInventory) -> Result<(), UI::Error> {
@@ -64,14 +64,14 @@ impl<UI: Context> GameHandle<UI> {
             LoreContents::Custom(v) => self.lore = LoreContents::Custom(v - 1),
             LoreContents::Inventory => {
                 let mut l = self.ui.lore();
-                l.set_color(Color::Green)?;
+                l.set_color(Color::GrowingWheat)?;
                 writeln!(l, "INVENTORY")?;
                 if self.player.wheat != 0 {
                     l.set_color(Color::Gold)?;
                     writeln!(l, "Wheat ({})", self.player.wheat)?;
                 }
                 if self.player.water != 0 {
-                    l.set_color(Color::Cyan)?;
+                    l.set_color(Color::XP)?;
                     write!(l, "Bucket of water")?;
                     if self.player.water > 1 {
                         write!(l, " ({})", self.player.water)?;
@@ -82,7 +82,7 @@ impl<UI: Context> GameHandle<UI> {
             }
             LoreContents::Items(page) => {
                 let mut l = self.ui.lore();
-                l.set_color(Color::Green)?;
+                l.set_color(Color::GrowingWheat)?;
                 write!(l, "INVENTORY")?;
                 l.set_color(Color::Normal)?;
                 writeln!(l, " page #{}", page as u16 + 1)?;
@@ -213,7 +213,7 @@ impl<UI: Context> Game<UI> {
         {
             let mut s = self.handle.ui.status();
             s.set_line(1)?;
-            s.set_color(Color::Blue)?;
+            s.set_color(Color::Water)?;
             write!(s, " [can use]")
         } else {
             let mut s = self.handle.ui.status();

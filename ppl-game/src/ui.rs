@@ -70,15 +70,17 @@ pub enum BlockTy {
 
 /// Represents text color.
 #[derive(Clone, Copy, PartialEq, Eq, Debug)]
-// TODO: change color names to thing names (ex. BoldRed -> Health)
 pub enum Color {
     Normal,
-    Red,
-    BoldRed,
-    Green,
-    Blue,
-    Magenta,
-    Cyan,
+    RareItem,
+    SpecialItem,
+
+    GrowingWheat,
+    Wheat,
+    Water,
+
+    Health,
+    XP,
     Gold,
 }
 
