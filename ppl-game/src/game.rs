@@ -200,6 +200,28 @@ impl<UI: Context> Game<UI> {
         self.handle.do_random_tick(&mut self.player_inventory)
     }
 
+    fn update_status_if_needed(&mut self) -> Result<(), UI::Error> {
+        let pos = self.player_pos;
+        if let Some(BlockData {
+            state:
+                BlockState {
+                    collision: CollisionTy::CanUse,
+                    ..
+                },
+            ..
+        }) = self.maps.find_at(pos)
+        {
+            let mut s = self.handle.ui.status();
+            s.set_line(1)?;
+            s.set_color(Color::Blue)?;
+            write!(s, " [can use]")
+        } else {
+            let mut s = self.handle.ui.status();
+            // FIXME: clear one line, not a whole fragment
+            s.clear()
+        }
+    }
+
     /// Do [`GameAction`]
     pub fn do_action(&mut self, act: GameAction) -> Result<(), UI::Error> {
         use GameAction::*;
@@ -237,24 +259,7 @@ impl<UI: Context> Game<UI> {
                 m.set_pos(pos)?;
                 m.put_block(BlockTy::Player)?;
                 drop(m);
-                if let Some(BlockData {
-                    state:
-                        BlockState {
-                            collision: CollisionTy::CanUse,
-                            ..
-                        },
-                    ..
-                }) = self.maps.find_at(pos)
-                {
-                    let mut s = self.handle.ui.status();
-                    s.set_line(1)?;
-                    s.set_color(Color::Blue)?;
-                    write!(s, " [can use]")?;
-                } else {
-                    let mut s = self.handle.ui.status();
-                    // FIXME: clear one line, not a whole fragment
-                    s.clear()?;
-                }
+                self.update_status_if_needed()?;
             }
             Interact => {
                 self.maps.interact_at(
@@ -262,6 +267,7 @@ impl<UI: Context> Game<UI> {
                     &mut self.handle,
                     &mut self.player_inventory,
                 )?;
+                self.update_status_if_needed()?;
             }
         }
         Ok(())
