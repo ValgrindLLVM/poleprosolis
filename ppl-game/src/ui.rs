@@ -53,12 +53,19 @@ use crate::things::BlockState;
 #[derive(Clone, Copy, PartialEq, Eq, Debug)]
 pub enum BlockTy {
     Air,
+    
     Player,
+    NPCFarmer,
 
     Wheat,
     GrowingWheat,
 
+    Wall,
+    WallDoor,
+
     Water,
+    BridgeV,
+    BridgeH,
 }
 
 /// Represents text color.

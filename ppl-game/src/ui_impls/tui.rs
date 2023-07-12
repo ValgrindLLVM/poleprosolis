@@ -278,12 +278,19 @@ impl<
         let mut s = std::io::stdout();
         match block {
             Air => s.write_all(b" "),
+
             Player => s.write_all(b"\x1b[1;92m@\x1b[0m"),
+            NPCFarmer => s.write_all(b"\x1b[1;33m&\x1b[0m"),
 
-            Wheat => s.write_all(b"\x1b[1;32m#\x1b[0m"),
-            GrowingWheat => s.write_all(b"\x1b[33m+\x1b[0m"),
+            Wheat => s.write_all(b"\x1b[33m#\x1b[0m"),
+            GrowingWheat => s.write_all(b"\x1b[32m+\x1b[0m"),
 
-            Water => s.write_all(b"\x1b[1;34m%\x1b[0m"),
+            Wall => s.write_all(b"\x1b[30m#\x1b[0m"),
+            WallDoor => s.write_all(b"\x1b[30m-\x1b[0m"),
+
+            Water => s.write_all(b"\x1b[34m%\x1b[0m"),
+            BridgeV => s.write_all(b"\x1b[34m|\x1b[0m"),
+            BridgeH => s.write_all(b"\x1b[34m-\x1b[0m"),
         }
     }
 }
