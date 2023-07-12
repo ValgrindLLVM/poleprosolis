@@ -5,7 +5,7 @@ use rand::{thread_rng, Rng};
 use crate::{
     assets::items::ItemBehavior,
     map::GameMaps,
-    player::{Player, PlayerInventory},
+    player::{Player, PlayerInventory, PlayerLimits},
     things::{BlockData, BlockState, CollisionTy, ItemData, ItemTier, ItemUpdateContext},
     ui::{BlockFragment, BlockTy, Color, Context, Fragment, Point, TextFragment, TextFragmentFmt},
 };
@@ -45,12 +45,12 @@ pub enum LoreContents {
 
 impl<UI: Context> GameHandle<UI> {
     /// Draws player information in status like HP, XP, etc...
-    pub fn draw_player_info(&mut self) -> Result<(), UI::Error> {
+    pub fn draw_player_info(&mut self, limits: &PlayerLimits) -> Result<(), UI::Error> {
         let mut s = self.ui.status();
         s.set_color(Color::GrowingWheatBlock)?;
         write!(s, "狐 ")?;
         s.set_color(Color::Health)?;
-        write!(s, "{} HP ", self.player.health)?;
+        write!(s, "{}/{} HP ", self.player.health, limits.health)?;
         s.set_color(Color::XP)?;
         write!(s, "{:3} XP ", self.player.xp)?;
         s.set_color(Color::Gold)?;
@@ -62,7 +62,7 @@ impl<UI: Context> GameHandle<UI> {
         s.set_color(Color::Normal)?;
         write!(s, "/")?;
         s.set_color(Color::MaxValue)?;
-        write!(s, "500")?;
+        write!(s, "{}", limits.wheat)?;
         s.set_color(Color::Wheat)?;
         write!(s, " wheat ")?;
 
@@ -72,7 +72,7 @@ impl<UI: Context> GameHandle<UI> {
         s.set_color(Color::Normal)?;
         write!(s, "/")?;
         s.set_color(Color::MaxValue)?;
-        write!(s, "4")?;
+        write!(s, "{}", limits.water)?;
         s.set_color(Color::Water)?;
         write!(s, " water ")
     }
@@ -197,6 +197,11 @@ impl<UI: Context> Game<UI> {
         }
     }
 
+    /// Calculate player limits
+    pub fn player_limits(&self) -> PlayerLimits {
+        PlayerLimits::new().with(self.player_inventory.items.iter().map(|v| &v.state))
+    }
+
     /// Redraw all blocks on the map
     pub fn redraw_all(&mut self) -> Result<(), UI::Error> {
         let mut m = self.handle.ui.main();
@@ -206,6 +211,11 @@ impl<UI: Context> Game<UI> {
         }
         m.set_pos(self.player_pos)?;
         m.put_block(BlockTy::Player)
+    }
+
+    /// Draws player information in status like HP, XP, etc...
+    pub fn draw_player_info(&mut self) -> Result<(), UI::Error> {
+        self.handle.draw_player_info(&self.player_limits())
     }
 
     /// Draw (or clear) lore

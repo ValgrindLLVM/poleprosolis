@@ -10,7 +10,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     game.handle.ui.draw_borders()?;
     game.redraw_all()?;
-    game.handle.draw_player_info()?;
+    game.draw_player_info()?;
     game.handle.ui.apply()?;
     let buff = &mut [0];
 
@@ -31,7 +31,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         }
 
         game.draw_lore()?;
-        game.handle.draw_player_info()?;
+        game.draw_player_info()?;
         game.handle.ui.apply()?;
     }
 

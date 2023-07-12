@@ -1,6 +1,6 @@
 //! Player information
 
-use crate::things::ItemData;
+use crate::things::{ItemData, ItemState};
 
 /// Represents player
 pub struct Player {
@@ -10,6 +10,34 @@ pub struct Player {
 
     pub wheat: u32,
     pub water: u32,
+}
+
+/// Represents player's limits
+pub struct PlayerLimits {
+    pub health: u32,
+
+    pub wheat: u32,
+    pub water: u32,
+}
+
+impl PlayerLimits {
+    /// Obtain default player's limit
+    pub fn new() -> Self {
+        Self {
+            health: 10,
+            wheat: 500,
+            water: 4,
+        }
+    }
+    /// Apply item effects on limits
+    pub fn with<'a>(self, _iter: impl Iterator<Item = &'a ItemState>) -> Self {
+        self
+    }
+}
+impl Default for PlayerLimits {
+    fn default() -> Self {
+        Self::new()
+    }
 }
 
 impl Player {

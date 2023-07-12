@@ -40,7 +40,12 @@ impl BlockBehavior for Wheat {
         ctx: BlockUpdateContext<'_, UI>,
     ) -> Result<BlockUpdates, UI::Error> {
         if self.tick == 0 {
+            let limits = ctx.player_limits();
+
             ctx.game_handle.player.wheat += thread_rng().gen_range(1..=3);
+            if ctx.game_handle.player.wheat > limits.wheat {
+                ctx.game_handle.player.wheat = limits.wheat;
+            }
             self.tick = 7;
 
             ctx.this.ty = BlockTy::GrowingWheat;

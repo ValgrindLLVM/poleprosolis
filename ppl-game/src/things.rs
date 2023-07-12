@@ -16,7 +16,7 @@ use rand::{thread_rng, Rng};
 use crate::{
     assets::{blocks::Block, items::Item},
     game::GameHandle,
-    player::PlayerInventory,
+    player::{PlayerInventory, PlayerLimits},
     ui::{self, BlockTy, Color, Point},
 };
 
@@ -33,6 +33,12 @@ pub struct BlockUpdateContext<'a, UI: ui::Context> {
     pub game_handle: &'a mut GameHandle<UI>,
     pub player_inventory: &'a mut PlayerInventory,
     pub this: &'a mut BlockState,
+}
+
+impl<'a, UI: ui::Context> BlockUpdateContext<'a, UI> {
+    pub fn player_limits(&self) -> PlayerLimits {
+        PlayerLimits::new().with(self.player_inventory.items.iter().map(|v| &v.state))
+    }
 }
 
 impl<'a, UI: ui::Context, T> UpdateContext<'a, UI, T> {
