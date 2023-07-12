@@ -23,7 +23,7 @@ pub enum Bread {
 }
 
 impl Bread {
-    pub fn new() -> ItemData {
+    pub fn init() -> ItemData {
         ItemData {
             state: ItemState::default(),
             item: Self::Baking { tick: 0 }.into(),

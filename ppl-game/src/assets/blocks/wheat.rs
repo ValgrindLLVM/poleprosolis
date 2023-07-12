@@ -44,7 +44,7 @@ impl BlockBehavior for Wheat {
             ctx.this.ty = BlockTy::GrowingWheat;
             ctx.this.collision = CollisionTy::NoCollision;
 
-            ctx.player_inventory.items.push(Bread::new());
+            ctx.player_inventory.items.push(Bread::init());
         }
 
         BlockUpdates::new().ok()
