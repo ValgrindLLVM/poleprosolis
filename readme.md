@@ -19,6 +19,7 @@ Other bindings:
 | Key          | Description     |
 |--------------|-----------------|
 | <kbd>i</kbd> | Show inventory  |
+| <kbd>o</kbd> | Show items      |
 
 ## Contributing
 
